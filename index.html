@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<title>Your post</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #faf9f7;
+    --card: #ffffff;
+    --ink: #161616;
+    --muted: #6b6a67;
+    --line: #e3e1dc;
+    --button: #161616;
+    --button-ink: #ffffff;
+    --rec: #cf3a2e;
+    --rec-glow: 207 58 46;
+    --focus: #2f5bd3;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212;
+      --card: #1b1b1a;
+      --ink: #f2f1ee;
+      --muted: #a3a29e;
+      --line: #2c2c2a;
+      --button: #f2f1ee;
+      --button-ink: #121212;
+      --rec: #ff5c4f;
+      --rec-glow: 255 92 79;
+      --focus: #8fa9ff;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212;
+    --card: #1b1b1a;
+    --ink: #f2f1ee;
+    --muted: #a3a29e;
+    --line: #2c2c2a;
+    --button: #f2f1ee;
+    --button-ink: #121212;
+    --rec: #ff5c4f;
+    --rec-glow: 255 92 79;
+    --focus: #8fa9ff;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 32rem;
+    margin: 0 auto;
+    min-height: 100dvh;
+    padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    display: flex;
+  }
+  section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 24px;
+  }
+  .actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+  }
+  h1 {
+    font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.9rem; }
+  .question {
+    font-size: 1.55rem;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: pretty;
+  }
+  label { font-weight: 600; }
+  input, textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 17px;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  textarea { resize: none; line-height: 1.55; min-height: 9rem; overflow: hidden; }
+  input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 54px;
+    padding: 0 20px;
+    border-radius: 14px;
+    border: 1px solid var(--button);
+    background: var(--button);
+    color: var(--button-ink);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 120ms ease;
+  }
+  .button:active { transform: scale(0.98); }
+  .button.secondary { background: transparent; color: var(--ink); border-color: var(--line); }
+  .link {
+    align-self: center;
+    background: none;
+    border: 0;
+    padding: 10px;
+    font: inherit;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .mic-area {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 24px 0 8px;
+  }
+  .mic {
+    --level: 0;
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--button);
+    color: var(--button-ink);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 160ms ease, transform 120ms ease;
+  }
+  .mic:active { transform: scale(0.96); }
+  .mic svg { width: 40px; height: 40px; }
+  .mic[aria-pressed="true"] {
+    background: var(--rec);
+    color: #fff;
+    box-shadow: 0 0 0 calc(6px + var(--level) * 22px) rgb(var(--rec-glow) / 0.18);
+  }
+  .mic .stop { display: none; }
+  .mic[aria-pressed="true"] .stop { display: block; }
+  .mic[aria-pressed="true"] .mic-icon { display: none; }
+  .timer { font-variant-numeric: tabular-nums; color: var(--muted); min-height: 1.5em; }
+  .hint { text-align: center; min-height: 1.5em; }
+
+  .wait {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    border-top-color: var(--ink);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: min(28rem, calc(100% - 32px));
+    background: var(--button);
+    color: var(--button-ink);
+    padding: 14px 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.18);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 3s; }
+    .mic, .button { transition: none; }
+    .mic[aria-pressed="true"] { box-shadow: 0 0 0 8px rgb(var(--rec-glow) / 0.18); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <section id="loading" class="wait">
+    <div class="spinner" aria-hidden="true"></div>
+  </section>
+
+  <section id="closed" hidden>
+    <p class="question" id="closedText"></p>
+  </section>
+
+  <section id="start" hidden>
+    <h1 id="title"></h1>
+    <p id="intro" class="muted"></p>
+    <form id="startForm" class="actions" novalidate>
+      <label for="work">What do you do for work?</label>
+      <input id="work" name="work" autocomplete="organization-title" placeholder="e.g. nurse, teacher, accountant" maxlength="120" enterkeyhint="go">
+      <p class="muted small">Takes about three minutes. You answer out loud, and nothing is posted until you copy it yourself.</p>
+      <button class="button" type="submit">Start</button>
+    </form>
+  </section>
+
+  <section id="ask" hidden>
+    <p id="question" class="question" tabindex="-1" data-focus></p>
+
+    <div id="micArea" class="mic-area">
+      <button id="mic" class="mic" type="button" aria-pressed="false" aria-label="Start answering">
+        <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>
+        <svg class="stop" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>
+      </button>
+      <p id="timer" class="timer" aria-hidden="true"></p>
+      <p id="hint" class="hint" aria-live="polite">Tap and start talking</p>
+      <button id="typeInstead" class="link" type="button">Type instead</button>
+      <button id="enough" class="link" type="button" hidden>That's enough, write my post</button>
+    </div>
+
+    <div id="typeArea" class="actions" hidden>
+      <p id="typeNote" class="muted small" aria-live="polite"></p>
+      <textarea id="typed" aria-label="Your answer" placeholder="Write it the way you'd say it"></textarea>
+      <button id="typedDone" class="button" type="button">Done</button>
+      <button id="talkInstead" class="link" type="button">Talk instead</button>
+    </div>
+  </section>
+
+  <section id="heard" hidden>
+    <p class="question" tabindex="-1" data-focus>Here's what I heard</p>
+    <p class="muted small">Fix anything I got wrong, especially names.</p>
+    <textarea id="heardText" aria-label="What I heard"></textarea>
+    <div class="actions">
+      <button id="heardDone" class="button" type="button">That's right</button>
+      <button id="heardAgain" class="button secondary" type="button">Say it again</button>
+    </div>
+  </section>
+
+  <section id="wait" class="wait" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="waitText" class="muted" aria-live="polite"></p>
+  </section>
+
+  <section id="result" hidden>
+    <p class="question" tabindex="-1" data-focus>Your post</p>
+    <p class="muted small">Change anything you like. It's yours.</p>
+    <textarea id="post" aria-label="Your post"></textarea>
+    <div class="actions">
+      <a id="copy" class="button" href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">Copy and open LinkedIn</a>
+      <button id="again" class="button secondary" type="button">Try a different version</button>
+      <button id="restart" class="link" type="button">Start again</button>
+    </div>
+  </section>
+
+  <section id="error" hidden>
+    <p id="errorText" class="question" tabindex="-1" data-focus></p>
+    <div class="actions">
+      <button id="retry" class="button" type="button">Try again</button>
+      <button id="errorRestart" class="link" type="button">Start again</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+  const API = "https://post-api.ahmed-sakib.workers.dev";
+  const MAX_ANSWERS = 3;
+  const MAX_SECONDS = 240;
+  const slug = new URLSearchParams(location.search).get("c") || "";
+  const storageKey = `post:${slug}`;
+  const $ = (id) => document.getElementById(id);
+
+  let state = { work: "", turns: [], question: "", post: "" };
+  let recorder, chunks, stream, audioCtx, frame, ticker, startedAt, audioBlob, toastTimer;
+
+  function save() {
+    try { sessionStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+  }
+
+  function restore() {
+    try { return JSON.parse(sessionStorage.getItem(storageKey) || "null"); } catch { return null; }
+  }
+
+  function forget() {
+    try { sessionStorage.removeItem(storageKey); } catch {}
+  }
+
+  function show(id) {
+    for (const section of document.querySelectorAll("main > section")) section.hidden = section.id !== id;
+    window.scrollTo(0, 0);
+    $(id).querySelector("[data-focus]")?.focus({ preventScroll: true });
+    for (const area of $(id).querySelectorAll("textarea")) grow(area);
+  }
+
+  function grow(area) {
+    area.style.height = "auto";
+    area.style.height = `${area.scrollHeight + 2}px`;
+  }
+
+  function toast(text) {
+    $("toast").textContent = text;
+    $("toast").hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => ($("toast").hidden = true), 3500);
+  }
+
+  async function api(path, body, contentType) {
+    const init = body === undefined ? {} : {
+      method: "POST",
+      headers: { "Content-Type": contentType || "application/json" },
+      body: contentType ? body : JSON.stringify(body),
+    };
+    let response;
+    try {
+      response = await fetch(`${API}${path}?c=${encodeURIComponent(slug)}`, init);
+    } catch {
+      throw new Error("You look offline. Check your signal and try again.");
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Something went wrong. Try again.");
+    return data;
+  }
+
+  function wait(text) {
+    $("waitText").textContent = text;
+    show("wait");
+  }
+
+  function fail(error, retry) {
+    $("errorText").textContent = error.message;
+    $("retry").onclick = retry;
+    show("error");
+  }
+
+  function closed(text) {
+    $("closedText").textContent = text;
+    show("closed");
+  }
+
+  async function init() {
+    if (!slug) return closed("This link is missing a bit. Ask whoever sent it for a new one.");
+    let campaign;
+    try {
+      campaign = await api("/campaign");
+    } catch (error) {
+      return closed(error.message);
+    }
+    document.title = campaign.title;
+    $("title").textContent = campaign.title;
+    $("intro").textContent = campaign.intro;
+    const saved = restore();
+    if (saved && saved.post) {
+      state = saved;
+      return showPost();
+    }
+    show("start");
+  }
+
+  function restart() {
+    forget();
+    state = { work: state.work, turns: [], question: "", post: "" };
+    $("work").value = state.work;
+    show("start");
+  }
+
+  $("startForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const work = $("work").value.trim();
+    if (!work) {
+      $("work").focus();
+      $("work").placeholder = "Tell me your job first";
+      return;
+    }
+    state = { work, turns: [], question: "", post: "" };
+    nextQuestion();
+  });
+
+  async function nextQuestion() {
+    if (state.turns.length >= MAX_ANSWERS) return writePost();
+    wait(state.turns.length ? "Thinking about what you said…" : "Finding your question…");
+    try {
+      const { done, question } = await api("/ask", { work: state.work, turns: state.turns });
+      if (done) return writePost();
+      state.question = question;
+      save();
+      showQuestion();
+    } catch (error) {
+      fail(error, nextQuestion);
+    }
+  }
+
+  function showQuestion(hint = "Tap and start talking") {
+    $("question").textContent = state.question;
+    $("micArea").hidden = false;
+    $("typeArea").hidden = true;
+    $("timer").textContent = "";
+    $("hint").textContent = hint;
+    $("enough").hidden = state.turns.length === 0;
+    show("ask");
+  }
+
+  function showTyping(note = "") {
+    $("micArea").hidden = true;
+    $("typeArea").hidden = false;
+    $("typeNote").textContent = note;
+    $("typeNote").hidden = !note;
+    $("typed").value = "";
+    grow($("typed"));
+    $("typed").focus();
+  }
+
+  $("typeInstead").addEventListener("click", () => showTyping());
+  $("enough").addEventListener("click", () => writePost());
+  $("talkInstead").addEventListener("click", () => showQuestion());
+  $("typed").addEventListener("input", () => grow($("typed")));
+  $("typedDone").addEventListener("click", () => {
+    const answer = $("typed").value.trim();
+    if (!answer) return $("typed").focus();
+    commitAnswer(answer);
+  });
+
+  function commitAnswer(answer) {
+    state.turns.push({ q: state.question, a: answer });
+    save();
+    nextQuestion();
+  }
+
+  $("mic").addEventListener("click", () => {
+    if (recorder && recorder.state === "recording") recorder.stop();
+    else startRecording();
+  });
+
+  async function startRecording() {
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+      return showTyping("Recording doesn't work in this browser, so type your answer instead.");
+    }
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      audioCtx.resume();
+    } catch {}
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch {
+      return showTyping("Your mic is blocked, so type your answer instead. You can allow it in your browser settings.");
+    }
+    const mimeType = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"].find((type) => MediaRecorder.isTypeSupported(type));
+    recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    chunks = [];
+    recorder.ondataavailable = (event) => event.data.size && chunks.push(event.data);
+    recorder.onstop = finishRecording;
+    recorder.start(1000);
+    startedAt = Date.now();
+    $("mic").setAttribute("aria-pressed", "true");
+    $("mic").setAttribute("aria-label", "Stop, I'm done");
+    $("hint").textContent = "Tap when you're done";
+    $("typeInstead").hidden = true;
+    $("enough").hidden = true;
+    ticker = setInterval(updateTimer, 250);
+    updateTimer();
+    meter();
+  }
+
+  function updateTimer() {
+    const seconds = Math.floor((Date.now() - startedAt) / 1000);
+    $("timer").textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+    if (seconds >= MAX_SECONDS && recorder.state === "recording") recorder.stop();
+  }
+
+  function meter() {
+    try {
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      audioCtx.createMediaStreamSource(stream).connect(analyser);
+      const samples = new Uint8Array(analyser.fftSize);
+      const draw = () => {
+        analyser.getByteTimeDomainData(samples);
+        let peak = 0;
+        for (const sample of samples) peak = Math.max(peak, Math.abs(sample - 128));
+        $("mic").style.setProperty("--level", Math.min(1, peak / 60).toFixed(2));
+        frame = requestAnimationFrame(draw);
+      };
+      draw();
+    } catch {}
+  }
+
+  function stopMeter() {
+    cancelAnimationFrame(frame);
+    clearInterval(ticker);
+    stream?.getTracks().forEach((track) => track.stop());
+    $("mic").setAttribute("aria-pressed", "false");
+    $("mic").setAttribute("aria-label", "Start answering");
+    $("mic").style.setProperty("--level", 0);
+    $("typeInstead").hidden = false;
+    $("enough").hidden = state.turns.length === 0;
+  }
+
+  function finishRecording() {
+    stopMeter();
+    const seconds = (Date.now() - startedAt) / 1000;
+    audioBlob = new Blob(chunks, { type: recorder.mimeType || "audio/mp4" });
+    if (seconds < 2 || audioBlob.size < 2000) {
+      $("timer").textContent = "";
+      $("hint").textContent = "That was very short. Tap and try again.";
+      return;
+    }
+    transcribe();
+  }
+
+  async function transcribe() {
+    wait("Listening back…");
+    try {
+      const { text } = await api("/transcribe", audioBlob, audioBlob.type || "audio/mp4");
+      if (!text) return showQuestion("I didn't catch anything. Tap and try again.");
+      $("heardText").value = text;
+      show("heard");
+    } catch (error) {
+      fail(error, transcribe);
+    }
+  }
+
+  $("heardText").addEventListener("input", () => grow($("heardText")));
+  $("heardAgain").addEventListener("click", () => showQuestion());
+  $("heardDone").addEventListener("click", () => {
+    const answer = $("heardText").value.trim();
+    if (!answer) return showQuestion("I didn't catch anything. Tap and try again.");
+    commitAnswer(answer);
+  });
+
+  async function writePost(previous) {
+    wait(previous ? "Writing a different version. Give it about 20 seconds." : "Writing your post. Give it about 20 seconds.");
+    try {
+      const { post } = await api("/write", { work: state.work, turns: state.turns, previous });
+      state.post = post;
+      save();
+      showPost();
+    } catch (error) {
+      fail(error, () => writePost(previous));
+    }
+  }
+
+  function showPost() {
+    $("post").value = state.post;
+    show("result");
+  }
+
+  $("post").addEventListener("input", () => {
+    grow($("post"));
+    state.post = $("post").value;
+    save();
+  });
+
+  function copyBySelecting() {
+    const area = $("post");
+    area.focus();
+    area.select();
+    area.setSelectionRange(0, area.value.length);
+    const copied = document.execCommand && document.execCommand("copy");
+    toast(copied ? "Copied. Paste it into your LinkedIn post." : "Your post is selected. Copy it, then paste into LinkedIn.");
+  }
+
+  $("copy").addEventListener("click", () => {
+    const text = $("post").value;
+    if (!navigator.clipboard) return copyBySelecting();
+    navigator.clipboard.writeText(text).then(
+      () => toast("Copied. Paste it into your LinkedIn post."),
+      copyBySelecting,
+    );
+  });
+
+  $("again").addEventListener("click", () => writePost(state.post));
+  $("restart").addEventListener("click", restart);
+  $("errorRestart").addEventListener("click", restart);
+
+  init();
+</script>
+</body>
+</html>
