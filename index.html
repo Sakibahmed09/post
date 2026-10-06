@@ -198,6 +198,19 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  .photo {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .photo svg { flex: none; width: 26px; height: 26px; margin-top: 1px; color: var(--ink); }
+  .photo div { display: flex; flex-direction: column; gap: 6px; }
+  .photo strong { font-weight: 600; }
+
   .toast {
     position: fixed;
     left: 50%;
@@ -282,6 +295,14 @@
     <p class="question" tabindex="-1" data-focus>Your post</p>
     <p class="muted small">Change anything you like. It's yours.</p>
     <textarea id="post" aria-label="Your post"></textarea>
+    <div class="photo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.4A1 1 0 0 1 9.4 5h5.2a1 1 0 0 1 .8.6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <div>
+        <strong>Add a photo</strong>
+        <p id="photoIdea"></p>
+        <p class="muted small">A real photo of you, or one you took at a protest, does far better than text on its own. People see it next to your first two lines. No stock or AI images, and only show faces of people happy to be in it.</p>
+      </div>
+    </div>
     <div class="actions">
       <a id="copy" class="button" href="https://www.linkedin.com/feed/?shareActive=true" target="_blank" rel="noopener">Copy and open LinkedIn</a>
       <button id="again" class="button secondary" type="button">Try a different version</button>
@@ -308,7 +329,7 @@
   const storageKey = `post:${slug}`;
   const $ = (id) => document.getElementById(id);
 
-  let state = { work: "", turns: [], question: "", post: "" };
+  let state = { work: "", turns: [], question: "", post: "", photo: "" };
   let recorder, chunks, stream, audioCtx, frame, ticker, startedAt, audioBlob, toastTimer;
 
   function save() {
@@ -396,7 +417,7 @@
 
   function restart() {
     forget();
-    state = { work: state.work, turns: [], question: "", post: "" };
+    state = { work: state.work, turns: [], question: "", post: "", photo: "" };
     $("work").value = state.work;
     show("start");
   }
@@ -409,7 +430,7 @@
       $("work").placeholder = "Tell me your job first";
       return;
     }
-    state = { work, turns: [], question: "", post: "" };
+    state = { work, turns: [], question: "", post: "", photo: "" };
     nextQuestion();
   });
 
@@ -567,8 +588,9 @@
   async function writePost(previous) {
     wait(previous ? "Writing a different version. Give it about 20 seconds." : "Writing your post. Give it about 20 seconds.");
     try {
-      const { post } = await api("/write", { work: state.work, turns: state.turns, previous });
+      const { post, photo } = await api("/write", { work: state.work, turns: state.turns, previous });
       state.post = post;
+      state.photo = photo;
       save();
       showPost();
     } catch (error) {
@@ -578,6 +600,7 @@
 
   function showPost() {
     $("post").value = state.post;
+    $("photoIdea").textContent = state.photo || "A selfie of you where this happened, looking at the camera.";
     show("result");
   }
 
@@ -593,14 +616,14 @@
     area.select();
     area.setSelectionRange(0, area.value.length);
     const copied = document.execCommand && document.execCommand("copy");
-    toast(copied ? "Copied. Paste it into your LinkedIn post." : "Your post is selected. Copy it, then paste into LinkedIn.");
+    toast(copied ? "Copied. In LinkedIn, paste it and add your photo." : "Your post is selected. Copy it, then paste into LinkedIn and add your photo.");
   }
 
   $("copy").addEventListener("click", () => {
     const text = $("post").value;
     if (!navigator.clipboard) return copyBySelecting();
     navigator.clipboard.writeText(text).then(
-      () => toast("Copied. Paste it into your LinkedIn post."),
+      () => toast("Copied. In LinkedIn, paste it and add your photo."),
       copyBySelecting,
     );
   });
