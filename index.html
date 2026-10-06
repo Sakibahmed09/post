@@ -586,7 +586,7 @@
   });
 
   async function writePost(previous) {
-    wait(previous ? "Writing a different version. Give it about 20 seconds." : "Writing your post. Give it about 20 seconds.");
+    wait(previous ? "Writing a different version. Give it about 30 seconds." : "Writing your post. Give it about 30 seconds.");
     try {
       const { post, photo } = await api("/write", { work: state.work, turns: state.turns, previous });
       state.post = post;
