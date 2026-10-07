@@ -415,6 +415,10 @@
       state = saved;
       return showPost();
     }
+    if (saved && saved.work && saved.turns && saved.turns.length) {
+      state = saved;
+      return nextQuestion();
+    }
     show("start");
   }
 
