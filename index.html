@@ -369,14 +369,17 @@
       headers: { "Content-Type": contentType || "application/json" },
       body: contentType ? body : JSON.stringify(body),
     };
-    let response;
+    const dropped = "The connection dropped. Tap try again. If your post was already written, it comes straight back.";
+    let response, text;
     try {
       response = await fetch(`${API}${path}?c=${encodeURIComponent(slug)}`, init);
+      text = await response.text();
     } catch {
-      throw new Error("You look offline. Check your signal and try again.");
+      throw new Error(dropped);
     }
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "Something went wrong. Try again.");
+    let data = {};
+    try { data = JSON.parse(text.trim() || "{}"); } catch {}
+    if (!response.ok || data.error) throw new Error(data.error || "Something went wrong. Try again.");
     return data;
   }
 
