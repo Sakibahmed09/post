@@ -329,7 +329,7 @@
   const storageKey = `post:${slug}`;
   const $ = (id) => document.getElementById(id);
 
-  let state = { work: "", turns: [], question: "", post: "", photo: "" };
+  let state = { work: "", turns: [], question: "", post: "", photo: "", pillar: "" };
   let recorder, chunks, stream, audioCtx, frame, ticker, startedAt, audioBlob, toastTimer;
 
   function save() {
@@ -417,7 +417,7 @@
 
   function restart() {
     forget();
-    state = { work: state.work, turns: [], question: "", post: "", photo: "" };
+    state = { work: state.work, turns: [], question: "", post: "", photo: "", pillar: "" };
     $("work").value = state.work;
     show("start");
   }
@@ -430,7 +430,7 @@
       $("work").placeholder = "Tell me your job first";
       return;
     }
-    state = { work, turns: [], question: "", post: "", photo: "" };
+    state = { work, turns: [], question: "", post: "", photo: "", pillar: "" };
     nextQuestion();
   });
 
@@ -438,7 +438,8 @@
     if (state.turns.length >= MAX_ANSWERS) return writePost();
     wait(state.turns.length ? "Thinking about what you said…" : "Finding your question…");
     try {
-      const { done, question } = await api("/ask", { work: state.work, turns: state.turns });
+      const { done, question, pillar } = await api("/ask", { work: state.work, turns: state.turns, pillar: state.pillar || undefined });
+      if (pillar) state.pillar = pillar;
       if (done) return writePost();
       state.question = question;
       save();
@@ -588,7 +589,7 @@
   async function writePost(previous) {
     wait(previous ? "Writing a different version. Give it about 30 seconds." : "Writing your post. Give it about 30 seconds.");
     try {
-      const { post, photo } = await api("/write", { work: state.work, turns: state.turns, previous });
+      const { post, photo } = await api("/write", { work: state.work, turns: state.turns, previous, pillar: state.pillar || undefined });
       state.post = post;
       state.photo = photo;
       save();
